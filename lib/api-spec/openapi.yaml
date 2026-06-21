@@ -3,13 +3,25 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: LE Growth AI API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: ai
+    description: AI content generation
+  - name: posts
+    description: Post management
+  - name: analytics
+    description: Analytics data
+  - name: social
+    description: Social accounts
+  - name: media
+    description: Media library
+  - name: companies
+    description: Company management
 paths:
   /healthz:
     get:
@@ -24,6 +36,460 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /ai/generate-content:
+    post:
+      operationId: generateContent
+      tags: [ai]
+      summary: Generate social media content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentGenerationInput"
+      responses:
+        "200":
+          description: Generated content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedContent"
+
+  /ai/generate-hashtags:
+    post:
+      operationId: generateHashtags
+      tags: [ai]
+      summary: Generate hashtags for a platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HashtagInput"
+      responses:
+        "200":
+          description: Generated hashtags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedHashtags"
+
+  /ai/generate-calendar:
+    post:
+      operationId: generateCalendar
+      tags: [ai]
+      summary: Generate 30-day content calendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalendarInput"
+      responses:
+        "200":
+          description: Generated content calendar
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedCalendar"
+
+  /ai/improve-caption:
+    post:
+      operationId: improveCaption
+      tags: [ai]
+      summary: Improve an existing caption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaptionImproveInput"
+      responses:
+        "200":
+          description: Improved caption
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImprovedCaption"
+
+  /posts:
+    get:
+      operationId: listPosts
+      tags: [posts]
+      summary: List posts for a company
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, scheduled, published, failed]
+        - name: platform
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+    post:
+      operationId: createPost
+      tags: [posts]
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "201":
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+
+  /posts/{id}:
+    get:
+      operationId: getPost
+      tags: [posts]
+      summary: Get a single post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    patch:
+      operationId: updatePost
+      tags: [posts]
+      summary: Update a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdate"
+      responses:
+        "200":
+          description: Updated post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    delete:
+      operationId: deletePost
+      tags: [posts]
+      summary: Delete a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /posts/dashboard-summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [posts]
+      summary: Get dashboard summary stats
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /analytics:
+    get:
+      operationId: listAnalytics
+      tags: [analytics]
+      summary: Get analytics data for a company
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: platform
+          in: query
+          schema:
+            type: string
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnalyticsEntry"
+
+  /analytics/platform-breakdown:
+    get:
+      operationId: getPlatformBreakdown
+      tags: [analytics]
+      summary: Get per-platform analytics breakdown
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Platform breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlatformBreakdown"
+
+  /social-accounts:
+    get:
+      operationId: listSocialAccounts
+      tags: [social]
+      summary: List social accounts for a company
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Social accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SocialAccount"
+    post:
+      operationId: createSocialAccount
+      tags: [social]
+      summary: Create or update a social account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialAccountInput"
+      responses:
+        "201":
+          description: Social account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocialAccount"
+
+  /social-accounts/{id}:
+    patch:
+      operationId: updateSocialAccount
+      tags: [social]
+      summary: Update a social account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialAccountUpdate"
+      responses:
+        "200":
+          description: Updated social account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocialAccount"
+
+  /media:
+    get:
+      operationId: listMedia
+      tags: [media]
+      summary: List media for a company
+      parameters:
+        - name: company_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [image, video, all]
+      responses:
+        "200":
+          description: Media items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MediaItem"
+    post:
+      operationId: createMedia
+      tags: [media]
+      summary: Register a media upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaInput"
+      responses:
+        "201":
+          description: Created media item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaItem"
+
+  /media/{id}:
+    delete:
+      operationId: deleteMedia
+      tags: [media]
+      summary: Delete a media item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /companies/{id}:
+    get:
+      operationId: getCompany
+      tags: [companies]
+      summary: Get company details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+    patch:
+      operationId: updateCompany
+      tags: [companies]
+      summary: Update company details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUpdate"
+      responses:
+        "200":
+          description: Updated company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+  /profiles/{id}:
+    get:
+      operationId: getProfile
+      tags: [companies]
+      summary: Get user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [companies]
+      summary: Update user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +500,441 @@ components:
       required:
         - status
 
+    ContentGenerationInput:
+      type: object
+      required: [businessName, industry, location, tone, goal]
+      properties:
+        businessName:
+          type: string
+        industry:
+          type: string
+        location:
+          type: string
+        tone:
+          type: string
+          enum: [Professional, Friendly, Excited, Informative, Promotional]
+        goal:
+          type: string
+          enum: [Brand Awareness, Drive Sales, Get Bookings, Increase Followers]
+
+    GeneratedContent:
+      type: object
+      required: [instagram, facebook, tiktok, hashtags, callToAction]
+      properties:
+        instagram:
+          type: string
+        facebook:
+          type: string
+        tiktok:
+          type: string
+        hashtags:
+          type: array
+          items:
+            type: string
+        callToAction:
+          type: string
+
+    HashtagInput:
+      type: object
+      required: [industry, platform, location]
+      properties:
+        industry:
+          type: string
+        platform:
+          type: string
+        location:
+          type: string
+
+    GeneratedHashtags:
+      type: object
+      required: [hashtags]
+      properties:
+        hashtags:
+          type: array
+          items:
+            type: string
+
+    CalendarInput:
+      type: object
+      required: [businessName, industry, month]
+      properties:
+        businessName:
+          type: string
+        industry:
+          type: string
+        month:
+          type: string
+
+    CalendarEntry:
+      type: object
+      required: [week, day, date, platform, theme, postIdea, caption, hashtags]
+      properties:
+        week:
+          type: integer
+        day:
+          type: string
+        date:
+          type: string
+        platform:
+          type: string
+        theme:
+          type: string
+        postIdea:
+          type: string
+        caption:
+          type: string
+        hashtags:
+          type: array
+          items:
+            type: string
+
+    GeneratedCalendar:
+      type: object
+      required: [calendar]
+      properties:
+        calendar:
+          type: array
+          items:
+            $ref: "#/components/schemas/CalendarEntry"
+
+    CaptionImproveInput:
+      type: object
+      required: [caption, platform, tone]
+      properties:
+        caption:
+          type: string
+        platform:
+          type: string
+        tone:
+          type: string
+
+    ImprovedCaption:
+      type: object
+      required: [improved]
+      properties:
+        improved:
+          type: string
+
+    Post:
+      type: object
+      required: [id, company_id, platform, status, created_at]
+      properties:
+        id:
+          type: string
+        company_id:
+          type: string
+        platform:
+          type: string
+          enum: [instagram, facebook, tiktok, twitter, linkedin]
+        caption:
+          type: ["string", "null"]
+        hashtags:
+          type: array
+          items:
+            type: string
+        image_url:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [draft, scheduled, published, failed]
+        scheduled_at:
+          type: ["string", "null"]
+        published_at:
+          type: ["string", "null"]
+        likes:
+          type: ["integer", "null"]
+        comments:
+          type: ["integer", "null"]
+        shares:
+          type: ["integer", "null"]
+        reach:
+          type: ["integer", "null"]
+        created_by:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    PostInput:
+      type: object
+      required: [company_id, platform]
+      properties:
+        company_id:
+          type: string
+        platform:
+          type: string
+          enum: [instagram, facebook, tiktok, twitter, linkedin]
+        caption:
+          type: string
+        hashtags:
+          type: array
+          items:
+            type: string
+        image_url:
+          type: string
+        status:
+          type: string
+          enum: [draft, scheduled, published, failed]
+        scheduled_at:
+          type: string
+        created_by:
+          type: string
+
+    PostUpdate:
+      type: object
+      properties:
+        caption:
+          type: string
+        hashtags:
+          type: array
+          items:
+            type: string
+        image_url:
+          type: string
+        status:
+          type: string
+          enum: [draft, scheduled, published, failed]
+        scheduled_at:
+          type: ["string", "null"]
+
+    DashboardSummary:
+      type: object
+      required: [totalFollowers, totalEngagement, totalPosts, avgEngagementRate, recentPosts, weeklyChange]
+      properties:
+        totalFollowers:
+          type: integer
+        totalEngagement:
+          type: integer
+        totalPosts:
+          type: integer
+        avgEngagementRate:
+          type: number
+        recentPosts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+        weeklyChange:
+          $ref: "#/components/schemas/WeeklyChange"
+
+    WeeklyChange:
+      type: object
+      required: [followers, engagement, posts]
+      properties:
+        followers:
+          type: number
+        engagement:
+          type: number
+        posts:
+          type: number
+
+    AnalyticsEntry:
+      type: object
+      required: [id, company_id, platform, date]
+      properties:
+        id:
+          type: string
+        company_id:
+          type: string
+        platform:
+          type: string
+        date:
+          type: string
+        followers:
+          type: ["integer", "null"]
+        new_followers:
+          type: ["integer", "null"]
+        likes:
+          type: ["integer", "null"]
+        comments:
+          type: ["integer", "null"]
+        shares:
+          type: ["integer", "null"]
+        reach:
+          type: ["integer", "null"]
+        impressions:
+          type: ["integer", "null"]
+        engagement_rate:
+          type: ["number", "null"]
+
+    PlatformBreakdown:
+      type: object
+      required: [platform, followers, posts, avgLikes, avgComments, engagementRate]
+      properties:
+        platform:
+          type: string
+        followers:
+          type: integer
+        posts:
+          type: integer
+        avgLikes:
+          type: number
+        avgComments:
+          type: number
+        engagementRate:
+          type: number
+
+    SocialAccount:
+      type: object
+      required: [id, company_id, platform, connected, created_at]
+      properties:
+        id:
+          type: string
+        company_id:
+          type: string
+        platform:
+          type: string
+          enum: [instagram, facebook, tiktok, twitter, linkedin]
+        username:
+          type: ["string", "null"]
+        followers:
+          type: ["integer", "null"]
+        posts_count:
+          type: ["integer", "null"]
+        engagement_rate:
+          type: ["number", "null"]
+        connected:
+          type: boolean
+        connected_at:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    SocialAccountInput:
+      type: object
+      required: [company_id, platform]
+      properties:
+        company_id:
+          type: string
+        platform:
+          type: string
+          enum: [instagram, facebook, tiktok, twitter, linkedin]
+        username:
+          type: string
+        followers:
+          type: integer
+        posts_count:
+          type: integer
+        engagement_rate:
+          type: number
+        connected:
+          type: boolean
+
+    SocialAccountUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        followers:
+          type: integer
+        posts_count:
+          type: integer
+        engagement_rate:
+          type: number
+        connected:
+          type: boolean
+
+    MediaItem:
+      type: object
+      required: [id, company_id, file_name, file_url, created_at]
+      properties:
+        id:
+          type: string
+        company_id:
+          type: string
+        file_name:
+          type: string
+        file_url:
+          type: string
+        file_type:
+          type: ["string", "null"]
+        file_size:
+          type: ["integer", "null"]
+        uploaded_by:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    MediaInput:
+      type: object
+      required: [company_id, file_name, file_url]
+      properties:
+        company_id:
+          type: string
+        file_name:
+          type: string
+        file_url:
+          type: string
+        file_type:
+          type: string
+        file_size:
+          type: integer
+        uploaded_by:
+          type: string
+
+    Company:
+      type: object
+      required: [id, company_name, plan, created_at]
+      properties:
+        id:
+          type: string
+        company_name:
+          type: string
+        logo_url:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        plan:
+          type: string
+          enum: [starter, growth, pro, enterprise]
+        created_at:
+          type: string
+
+    CompanyUpdate:
+      type: object
+      properties:
+        company_name:
+          type: string
+        logo_url:
+          type: string
+        industry:
+          type: string
+        location:
+          type: string
+        website:
+          type: string
+        plan:
+          type: string
+          enum: [starter, growth, pro, enterprise]
+
+    Profile:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        company_id:
+          type: ["string", "null"]
+        full_name:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [admin, user]
+        avatar_url:
+          type: ["string", "null"]
+        created_at:
+          type: ["string", "null"]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        full_name:
+          type: string
+        avatar_url:
+          type: string
+        company_id:
+          type: string
