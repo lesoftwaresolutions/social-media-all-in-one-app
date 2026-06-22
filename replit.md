@@ -38,7 +38,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- **Emit skipped error**: If you see `Error: ...: Emit skipped`, it's likely due to stale TypeScript build cache. Run `find . -name ".tsbuildinfo" -delete` and then `pnpm run typecheck` to resolve.
+- **Library dependencies**: Always run `pnpm run typecheck:libs` before type-checking artifacts to ensure shared types are generated.
 
 ## Pointers
 
